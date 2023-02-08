@@ -13,10 +13,12 @@ type FilterBuilder struct {
 	filters []filterUnit
 }
 
+// NewFilterBuilder allows to create Filters for flux query
 func NewFilterBuilder() *FilterBuilder {
 	return &FilterBuilder{}
 }
 
+// And conditional allows to define "and" in flux filter
 func (f *FilterBuilder) And() *FilterBuilder {
 	f.filters = append(f.filters, filterUnit{
 		measurement:   "and",
@@ -24,6 +26,8 @@ func (f *FilterBuilder) And() *FilterBuilder {
 	})
 	return f
 }
+
+// Or conditional allows to define "or" in flux filter
 func (f *FilterBuilder) Or() *FilterBuilder {
 	f.filters = append(f.filters, filterUnit{
 		measurement:   "or",
@@ -31,6 +35,8 @@ func (f *FilterBuilder) Or() *FilterBuilder {
 	})
 	return f
 }
+
+// Equal measurement allows to define "==" in flux filter
 func (f *FilterBuilder) Equal(key string, value string) *FilterBuilder {
 	f.filters = append(f.filters, filterUnit{
 		key:           key,
@@ -41,6 +47,7 @@ func (f *FilterBuilder) Equal(key string, value string) *FilterBuilder {
 	return f
 }
 
+// NotEqual measurement allows to define "!=" in flux filter
 func (f *FilterBuilder) NotEqual(key string, value string) *FilterBuilder {
 	f.filters = append(f.filters, filterUnit{
 		key:           key,
@@ -50,6 +57,8 @@ func (f *FilterBuilder) NotEqual(key string, value string) *FilterBuilder {
 	})
 	return f
 }
+
+// LesserThan measurement allows to define "<" in flux filter
 func (f *FilterBuilder) LesserThan(key string, value string) *FilterBuilder {
 	f.filters = append(f.filters, filterUnit{
 		key:           key,
@@ -59,6 +68,8 @@ func (f *FilterBuilder) LesserThan(key string, value string) *FilterBuilder {
 	})
 	return f
 }
+
+// LesserThanEqualTo measurement allows to define "<=" in flux filter
 func (f *FilterBuilder) LesserThanEqualTo(key string,
 	value string) *FilterBuilder {
 	f.filters = append(f.filters, filterUnit{
@@ -69,6 +80,8 @@ func (f *FilterBuilder) LesserThanEqualTo(key string,
 	})
 	return f
 }
+
+// GreaterThan measurement allows to define ">" in flux filter
 func (f *FilterBuilder) GreaterThan(key string, value string) *FilterBuilder {
 	f.filters = append(f.filters, filterUnit{
 		key:           key,
@@ -78,6 +91,8 @@ func (f *FilterBuilder) GreaterThan(key string, value string) *FilterBuilder {
 	})
 	return f
 }
+
+// GreaterThanEqualTo measurement allows to define ">=" in flux filter
 func (f *FilterBuilder) GreaterThanEqualTo(key string,
 	value string) *FilterBuilder {
 	f.filters = append(f.filters, filterUnit{
@@ -89,6 +104,7 @@ func (f *FilterBuilder) GreaterThanEqualTo(key string,
 	return f
 }
 
+// Build allows to build the filter
 func (f *FilterBuilder) Build() Filter {
 	var filter []filterUnit
 	for _, filters := range f.filters {
@@ -97,6 +113,7 @@ func (f *FilterBuilder) Build() Filter {
 	return filter
 }
 
+// Validate is the validation impl of Builder for FilterBuilder
 func (f *FilterBuilder) Validate() error {
 	if f.filters == nil {
 		return throwError(filterBuilderError, "nil filters, "+
@@ -105,6 +122,7 @@ func (f *FilterBuilder) Validate() error {
 	return nil
 }
 
+// Parse is the parsing impl of Builder for FilterBuilder
 func (f *FilterBuilder) Parse() string {
 	return filterGenerator(f.Build())
 }

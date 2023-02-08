@@ -9,6 +9,7 @@ type FromBuilder struct {
 	Token    string
 }
 
+// Validate is the validation impl of Builder for FromBuilder
 func (f FromBuilder) Validate() error {
 	if f.Bucket != "" && f.BucketID != "" {
 		return throwError(fromBuilderError, "bucket and bucketID should be mutually"+
@@ -20,6 +21,7 @@ func (f FromBuilder) Validate() error {
 	return nil
 }
 
+// Parse is the parsing impl of Builder for FromBuilder
 func (f FromBuilder) Parse() string {
 	return commonGenerator("from", f)
 }
