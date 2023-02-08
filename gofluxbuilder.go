@@ -30,7 +30,11 @@ func throwError(name string, data interface{}) error {
 
 // NewGoFluxQueryBuilder is the constructor to build flux queries
 func NewGoFluxQueryBuilder() *QueryBuilder {
-	return &QueryBuilder{query: &Query{}}
+	return &QueryBuilder{query: &Query{
+		From:   FromBuilder{},
+		Range:  RangeBuilder{},
+		Filter: nil,
+	}}
 }
 
 // From allows to define from parameters of flux query
@@ -39,7 +43,7 @@ func (q *QueryBuilder) From(from Builder) *QueryBuilder {
 	return q
 }
 
-// Range allows to define range paramteres of flux query
+// Range allows to define range parameters of flux query
 func (q *QueryBuilder) Range(r Builder) *QueryBuilder {
 	q.query.Range = r
 	return q
@@ -71,15 +75,19 @@ func (q *QueryBuilder) Build() (string, error) {
 	if err != nil {
 		return "", throwError(queryValidationError, err.Error())
 	}
-	err = q.query.Filter.Validate()
-	if err != nil {
-		return "", throwError(queryValidationError, err.Error())
+	if q.query.Filter != nil {
+		err = q.query.Filter.Validate()
+		if err != nil {
+			return "", throwError(queryValidationError, err.Error())
+		}
 	}
 	var query string
 	query += q.query.From.Parse()
 	query += pipeGenerator()
 	query += q.query.Range.Parse()
-	query += pipeGenerator()
-	query += q.query.Filter.Parse()
+	if q.query.Filter != nil {
+		query += pipeGenerator()
+		query += q.query.Filter.Parse()
+	}
 	return query, nil
 }

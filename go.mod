@@ -1,4 +1,4 @@
-module go-fluxbuilder
+module github.com/golain-io/go-fluxbuilder
 
 go 1.19
 
