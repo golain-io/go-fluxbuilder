@@ -1,7 +1,5 @@
 package gofluxbuilder
 
-import "errors"
-
 type RangeBuilder struct {
 	Start string
 	Stop  string
@@ -9,7 +7,7 @@ type RangeBuilder struct {
 
 func (b RangeBuilder) Validate() error {
 	if b.Start == "" {
-		return errors.New("range needs a start value")
+		return throwError(rangeBuilderError, "range needs a start value")
 	}
 	return nil
 }

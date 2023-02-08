@@ -1,7 +1,5 @@
 package gofluxbuilder
 
-import "errors"
-
 type filterUnit struct {
 	key           string
 	value         string
@@ -101,7 +99,8 @@ func (f *FilterBuilder) Build() Filter {
 
 func (f *FilterBuilder) Validate() error {
 	if f.filters == nil {
-		return errors.New("nil filters, no filters applied")
+		return throwError(filterBuilderError, "nil filters, "+
+			"no filters applied")
 	}
 	return nil
 }

@@ -1,7 +1,5 @@
 package gofluxbuilder
 
-import "errors"
-
 type FromBuilder struct {
 	Bucket   string
 	BucketID string
@@ -13,10 +11,11 @@ type FromBuilder struct {
 
 func (f FromBuilder) Validate() error {
 	if f.Bucket != "" && f.BucketID != "" {
-		return errors.New("bucket and bucketID should be mutually exclusive")
+		return throwError(fromBuilderError, "bucket and bucketID should be mutually"+
+			" exclusive")
 	}
 	if f.Bucket == "" && f.BucketID == "" {
-		return errors.New("from needs bucket or bucketID")
+		return throwError(fromBuilderError, "from needs bucket or bucketID")
 	}
 	return nil
 }
