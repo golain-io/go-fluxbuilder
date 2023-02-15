@@ -2,9 +2,9 @@ package gofluxbuilder
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/influxdata/influxdb-client-go/api"
+
+	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
 // Builder - The common interface of all various Builder structs
@@ -25,7 +25,7 @@ type QueryBuilder struct {
 }
 
 func throwError(name string, data interface{}) error {
-	return errors.New(fmt.Sprintf("%s: %v", name, data))
+	return fmt.Errorf("%s: %v", name, data)
 }
 
 // NewGoFluxQueryBuilder is the constructor to build flux queries
