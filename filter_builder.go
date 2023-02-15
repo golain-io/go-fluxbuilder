@@ -107,9 +107,7 @@ func (f *FilterBuilder) GreaterThanEqualTo(key string,
 // Build allows to build the filter
 func (f *FilterBuilder) Build() Filter {
 	var filter []filterUnit
-	for _, filters := range f.filters {
-		filter = append(filter, filters)
-	}
+	filter = append(filter, f.filters...)
 	return filter
 }
 
