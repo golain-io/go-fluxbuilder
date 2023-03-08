@@ -17,6 +17,9 @@ type Query struct {
 	From   Builder
 	Range  Builder
 	Filter Builder
+	Max    Builder
+	Min    Builder
+	Mean   Builder
 }
 
 // QueryBuilder is the persistent struct that allows us to hold the information
@@ -34,6 +37,9 @@ func NewGoFluxQueryBuilder() *QueryBuilder {
 		From:   FromBuilder{},
 		Range:  RangeBuilder{},
 		Filter: nil,
+		Max:    nil,
+		Min:    nil,
+		Mean:   nil,
 	}}
 }
 
@@ -52,6 +58,36 @@ func (q *QueryBuilder) Range(r Builder) *QueryBuilder {
 // Filter allows to define filters of flux query
 func (q *QueryBuilder) Filter(filter Builder) *QueryBuilder {
 	q.query.Filter = filter
+	return q
+}
+
+// Max allows to define max of flux query
+func (q *QueryBuilder) Max(max ...Builder) *QueryBuilder {
+	if len(max) == 0 {
+		q.query.Max = MaxBuilder{}
+		return q
+	}
+	q.query.Max = max[0]
+	return q
+}
+
+// Min allows to define max of flux query
+func (q *QueryBuilder) Min(min ...Builder) *QueryBuilder {
+	if len(min) == 0 {
+		q.query.Min = MinBuilder{}
+		return q
+	}
+	q.query.Min = min[0]
+	return q
+}
+
+// Mean allows to define max of flux query
+func (q *QueryBuilder) Mean(mean ...Builder) *QueryBuilder {
+	if len(mean) == 0 {
+		q.query.Mean = MeanBuilder{}
+		return q
+	}
+	q.query.Mean = mean[0]
 	return q
 }
 
@@ -88,6 +124,18 @@ func (q *QueryBuilder) Build() (string, error) {
 	if q.query.Filter != nil {
 		query += pipeGenerator()
 		query += q.query.Filter.Parse()
+	}
+	if q.query.Max != nil {
+		query += pipeGenerator()
+		query += q.query.Max.Parse()
+	}
+	if q.query.Min != nil {
+		query += pipeGenerator()
+		query += q.query.Min.Parse()
+	}
+	if q.query.Mean != nil {
+		query += pipeGenerator()
+		query += q.query.Mean.Parse()
 	}
 	return query, nil
 }
