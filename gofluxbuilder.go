@@ -20,6 +20,8 @@ type Query struct {
 	Max    Builder
 	Min    Builder
 	Mean   Builder
+	Sort   Builder
+	Limit  Builder
 }
 
 // QueryBuilder is the persistent struct that allows us to hold the information
@@ -40,6 +42,8 @@ func NewGoFluxQueryBuilder() *QueryBuilder {
 		Max:    nil,
 		Min:    nil,
 		Mean:   nil,
+		Sort:   nil,
+		Limit:  nil,
 	}}
 }
 
@@ -91,6 +95,18 @@ func (q *QueryBuilder) Mean(mean ...Builder) *QueryBuilder {
 	return q
 }
 
+// Sort allows to define max of flux query
+func (q *QueryBuilder) Sort(sort Builder) *QueryBuilder {
+	q.query.Sort = sort
+	return q
+}
+
+// Limit allows to define max of flux query
+func (q *QueryBuilder) Limit(limit Builder) *QueryBuilder {
+	q.query.Limit = limit
+	return q
+}
+
 // Query makes the request and executes the flux query on influxDB
 func (q *QueryBuilder) Query(ctx context.Context, client *api.QueryAPI) (res *api.
 	QueryTableResult, err error) {
@@ -117,6 +133,13 @@ func (q *QueryBuilder) Build() (string, error) {
 			return "", throwError(queryValidationError, err.Error())
 		}
 	}
+	if q.query.Limit != nil {
+		err = q.query.Filter.Validate()
+		if err != nil {
+			return "", throwError(queryValidationError, err.Error())
+
+		}
+	}
 	var query string
 	query += q.query.From.Parse()
 	query += pipeGenerator()
@@ -136,6 +159,14 @@ func (q *QueryBuilder) Build() (string, error) {
 	if q.query.Mean != nil {
 		query += pipeGenerator()
 		query += q.query.Mean.Parse()
+	}
+	if q.query.Sort != nil {
+		query += pipeGenerator()
+		query += q.query.Sort.Parse()
+	}
+	if q.query.Limit != nil {
+		query += pipeGenerator()
+		query += q.query.Limit.Parse()
 	}
 	return query, nil
 }
