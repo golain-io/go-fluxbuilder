@@ -69,3 +69,30 @@ func commonGenerator(name string, data interface{}) string {
 	generator += ")"
 	return generator
 }
+
+func sortGenerator(data SortBuilder) string {
+	generator := "sort("
+	if len(data.Columns) > 0 {
+		generator += "columns: ["
+		for i, value := range data.Columns {
+			if i == len(data.Columns)-1 {
+				generator += fmt.Sprintf("\"%v\"", value)
+				break
+			}
+			generator += fmt.Sprintf("\"%v\", ", value)
+		}
+		generator += "], "
+		generator += fmt.Sprintf("desc: %t", data.Desc)
+	}
+	generator += ")"
+	return generator
+}
+
+func limitGenerator(data LimitBuilder) string {
+	generator := fmt.Sprintf("limit(n: %d,", data.N)
+	if data.Offset > 0 {
+		generator += fmt.Sprintf(" offset: %d", data.Offset)
+	}
+	generator += ")"
+	return generator
+}
