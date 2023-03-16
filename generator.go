@@ -88,6 +88,26 @@ func sortGenerator(data SortBuilder) string {
 	return generator
 }
 
+func groupGenerator(data GroupBuilder) string {
+	generator := "group("
+	if len(data.Columns) > 0 {
+		generator += "columns: ["
+		for i, value := range data.Columns {
+			if i == len(data.Columns)-1 {
+				generator += fmt.Sprintf("\"%v\"", value)
+				break
+			}
+			generator += fmt.Sprintf("\"%v\", ", value)
+		}
+		generator += "], "
+		if data.Mode != "" {
+			generator += fmt.Sprintf("mode: %s", data.Mode)
+		}
+	}
+	generator += ")"
+	return generator
+}
+
 func limitGenerator(data LimitBuilder) string {
 	generator := fmt.Sprintf("limit(n: %d,", data.N)
 	if data.Offset > 0 {

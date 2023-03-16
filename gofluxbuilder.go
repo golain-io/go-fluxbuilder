@@ -22,6 +22,8 @@ type Query struct {
 	Mean   Builder
 	Sort   Builder
 	Limit  Builder
+	Count  Builder
+	Group  Builder
 }
 
 // QueryBuilder is the persistent struct that allows us to hold the information
@@ -44,6 +46,7 @@ func NewGoFluxQueryBuilder() *QueryBuilder {
 		Mean:   nil,
 		Sort:   nil,
 		Limit:  nil,
+		Count:  nil,
 	}}
 }
 
@@ -75,7 +78,7 @@ func (q *QueryBuilder) Max(max ...Builder) *QueryBuilder {
 	return q
 }
 
-// Min allows to define max of flux query
+// Min allows to define min of flux query
 func (q *QueryBuilder) Min(min ...Builder) *QueryBuilder {
 	if len(min) == 0 {
 		q.query.Min = MinBuilder{}
@@ -85,7 +88,7 @@ func (q *QueryBuilder) Min(min ...Builder) *QueryBuilder {
 	return q
 }
 
-// Mean allows to define max of flux query
+// Mean allows to define mean of flux query
 func (q *QueryBuilder) Mean(mean ...Builder) *QueryBuilder {
 	if len(mean) == 0 {
 		q.query.Mean = MeanBuilder{}
@@ -95,15 +98,31 @@ func (q *QueryBuilder) Mean(mean ...Builder) *QueryBuilder {
 	return q
 }
 
-// Sort allows to define max of flux query
+// Sort allows to define sort of flux query
 func (q *QueryBuilder) Sort(sort Builder) *QueryBuilder {
 	q.query.Sort = sort
 	return q
 }
 
-// Limit allows to define max of flux query
+// Limit allows to define limit of flux query
 func (q *QueryBuilder) Limit(limit Builder) *QueryBuilder {
 	q.query.Limit = limit
+	return q
+}
+
+// Count allows to define count of flux query
+func (q *QueryBuilder) Count(mean ...Builder) *QueryBuilder {
+	if len(mean) == 0 {
+		q.query.Mean = CountBuilder{}
+		return q
+	}
+	q.query.Mean = mean[0]
+	return q
+}
+
+// Group allows to define group of flux query
+func (q *QueryBuilder) Group(group Builder) *QueryBuilder {
+	q.query.Group = group
 	return q
 }
 
@@ -167,6 +186,14 @@ func (q *QueryBuilder) Build() (string, error) {
 	if q.query.Limit != nil {
 		query += pipeGenerator()
 		query += q.query.Limit.Parse()
+	}
+	if q.query.Count != nil {
+		query += pipeGenerator()
+		query += q.query.Count.Parse()
+	}
+	if q.query.Group != nil {
+		query += pipeGenerator()
+		query += q.query.Group.Parse()
 	}
 	return query, nil
 }
