@@ -24,6 +24,7 @@ type Query struct {
 	Limit  Builder
 	Count  Builder
 	Group  Builder
+	Sum    Builder
 }
 
 // QueryBuilder is the persistent struct that allows us to hold the information
@@ -113,7 +114,7 @@ func (q *QueryBuilder) Limit(limit Builder) *QueryBuilder {
 // Count allows to define count of flux query
 func (q *QueryBuilder) Count(mean ...Builder) *QueryBuilder {
 	if len(mean) == 0 {
-		q.query.Mean = CountBuilder{}
+		q.query.Mean = SumBuilder{}
 		return q
 	}
 	q.query.Mean = mean[0]
@@ -123,6 +124,12 @@ func (q *QueryBuilder) Count(mean ...Builder) *QueryBuilder {
 // Group allows to define group of flux query
 func (q *QueryBuilder) Group(group Builder) *QueryBuilder {
 	q.query.Group = group
+	return q
+}
+
+// Sum allows to define sum of flux query
+func (q *QueryBuilder) Sum(sum Builder) *QueryBuilder {
+	q.query.Sum = sum
 	return q
 }
 
@@ -194,6 +201,10 @@ func (q *QueryBuilder) Build() (string, error) {
 	if q.query.Group != nil {
 		query += pipeGenerator()
 		query += q.query.Group.Parse()
+	}
+	if q.query.Sum != nil {
+		query += pipeGenerator()
+		query += q.query.Sum.Parse()
 	}
 	return query, nil
 }
